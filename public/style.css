@@ -486,3 +486,75 @@ body.theme-night .player-container {
     opacity: 0.85;
     letter-spacing: 2px;
 }
+
+/* 播放列表主容器 */
+.queue-container {
+    margin-top: 20px;
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+/* 自訂 scrollbar */
+.queue-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.queue-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.queue-container::-webkit-scrollbar-thumb {
+    background: var(--themeColor, #888);
+    border-radius: 10px;
+}
+
+/* 單一項目 */
+.queue-item {
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(3px);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+/* hover 效果 */
+.queue-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-1px);
+}
+
+/* 點擊時微縮小 */
+.queue-item:active {
+    transform: scale(0.98);
+}
+
+/* 歌名 */
+.queue-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 0.2px;
+}
+
+/* 歌手 */
+.queue-artist {
+    font-size: 13px;
+    opacity: 0.75;
+    margin-top: 2px;
+    color: #ddd;
+}
+
+/* 標題：接下來播放 */
+.queue-header {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--themeColor, #ffd65c);
+    letter-spacing: 1px;
+}

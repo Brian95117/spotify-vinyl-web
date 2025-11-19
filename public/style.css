@@ -561,7 +561,7 @@ body.theme-night .player-container {
 
 /* ======= 放大 simple-clock ======= */
 #simple-clock {
-    font-size: 42px;
+    font-size: 64px;
     /* 調整時間大小 */
     font-weight: 700;
     letter-spacing: 2px;
@@ -583,7 +583,7 @@ body.theme-night .player-container {
 /* 日期與星期 */
 #simple-clock .clock-date {
     display: block;
-    font-size: 20px;
+    font-size: 48px;
     /* 調整日期大小 */
     font-weight: 400;
     letter-spacing: 1px;

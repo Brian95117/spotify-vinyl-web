@@ -70,6 +70,10 @@ let lastAccentColor = null;
 
 let hasShownSpotify403 = false; // 403 提示只出現一次
 
+// 方案 A：記錄目前播放的 context（playlist / album）
+let currentContextUri = null;
+let currentContextTracks = [];
+
 // ================= View 切換 =================
 
 function showLogin() {
@@ -217,7 +221,7 @@ async function transferPlayback(deviceId) {
     }
 }
 
-// 播放指定 track（點 queue item 用）
+// 播放指定 track（一般用途；queue 我們改用 context 播）
 async function playTrack(uri) {
     if (!accessToken || !uri) return;
     try {
@@ -242,6 +246,35 @@ async function playTrack(uri) {
         }
     } catch (err) {
         console.error("Error playing track", err);
+    }
+}
+
+// 方案 A：從 playlist / album context 播指定 index
+async function playFromContext(contextUri, index) {
+    if (!accessToken || !contextUri) return;
+    try {
+        const res = await fetch("https://api.spotify.com/v1/me/player/play", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + accessToken,
+            },
+            body: JSON.stringify({
+                context_uri: contextUri,
+                offset: { position: index },
+            }),
+        });
+
+        if (res.status === 403) {
+            handleSpotify403();
+            return;
+        }
+
+        if (!res.ok) {
+            console.warn("Error playFromContext", await res.text());
+        }
+    } catch (err) {
+        console.error("Error playFromContext", err);
     }
 }
 
@@ -461,6 +494,10 @@ async function buildQueueFromCurrent(auto = false) {
             item.track ? item.track : item
         );
 
+        // 方案 A：記住整份 context，以後 queue 點歌照這個播放
+        currentContextUri = context.uri;
+        currentContextTracks = items;
+
         // 4. 找出目前這首在清單裡的位置
         const currentIndex = items.findIndex((t) => t && t.id === currentTrackId);
 
@@ -514,10 +551,24 @@ function renderQueue(tracks, emptyMessage = "") {
         item.appendChild(title);
         item.appendChild(artist);
 
+        // 方案 A：用 context_uri + index 切歌，維持 queue 正確
         item.addEventListener("click", () => {
-            if (track.uri) {
-                playTrack(track.uri);
+            if (!currentContextUri || !currentContextTracks.length || !track.id) {
+                // 後備方案：退回用單首 URI 播
+                if (track.uri) {
+                    playTrack(track.uri);
+                }
+                return;
             }
+            const idx = currentContextTracks.findIndex(
+                (t) => t && t.id === track.id
+            );
+            if (idx === -1) {
+                // 找不到就當單首播
+                if (track.uri) playTrack(track.uri);
+                return;
+            }
+            playFromContext(currentContextUri, idx);
         });
 
         queueList.appendChild(item);

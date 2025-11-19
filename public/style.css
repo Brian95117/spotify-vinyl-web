@@ -1,9 +1,22 @@
-/* public/style.css */
+:root {
+    --bg-color: #111;
+    --text-color: #f4f4f4;
+    --muted-color: #bbbbbb;
+    --accent-color: #1db954;
+    --card-bg: #181818;
+    --turntable-bg: radial-gradient(circle at 30% 30%, #333, #000);
+    --vinyl-bg: radial-gradient(circle, #444 0, #000 40%, #111 60%, #000 100%);
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #111;
-    color: #f4f4f4;
+    background: radial-gradient(circle at top, #222, var(--bg-color));
+    color: var(--text-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,7 +24,7 @@ body {
 }
 
 #app {
-    max-width: 900px;
+    max-width: 1100px;
     width: 100%;
     padding: 20px;
 }
@@ -28,7 +41,7 @@ h1 {
 .btn {
     display: inline-block;
     padding: 10px 20px;
-    background: #1db954;
+    background: var(--accent-color);
     color: #fff;
     text-decoration: none;
     border-radius: 999px;
@@ -39,35 +52,66 @@ h1 {
     text-align: center;
 }
 
+/* Top bar */
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.logo {
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.theme-switcher select {
+    border-radius: 999px;
+    border: none;
+    padding: 4px 10px;
+    background: #222;
+    color: var(--text-color);
+}
+
+/* Player layout */
+
 .player-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 24px;
     justify-content: center;
     align-items: center;
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
 }
+
+/* Turntable - 盤子變大兩倍 */
 
 .turntable {
     position: relative;
-    width: 260px;
-    height: 260px;
-    background: radial-gradient(circle at 30% 30%, #333, #000);
-    border-radius: 16px;
+    width: 520px;
+    /* 原本 260 → x2 */
+    height: 520px;
+    background: var(--turntable-bg);
+    border-radius: 32px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .vinyl {
-    width: 200px;
-    height: 200px;
+    width: 400px;
+    /* 原本 200 → x2 */
+    height: 400px;
     border-radius: 50%;
-    background: radial-gradient(circle, #444 0, #000 40%, #111 60%, #000 100%);
-    border: 6px solid #111;
+    background: var(--vinyl-bg);
+    border: 12px solid #111;
     overflow: hidden;
     animation: spin 20s linear infinite;
     animation-play-state: paused;
-    /* 預設不轉，播放時再啟動 */
 }
 
 .vinyl img {
@@ -83,12 +127,13 @@ h1 {
 
 .arm {
     position: absolute;
-    width: 140px;
-    height: 6px;
+    width: 260px;
+    /* 原本 140 → 稍微放大 */
+    height: 8px;
     background: #888;
     border-radius: 6px;
-    top: 45px;
-    right: -20px;
+    top: 110px;
+    right: -10px;
     transform-origin: left center;
     transform: rotate(25deg);
     transition: transform 0.3s ease;
@@ -98,19 +143,21 @@ h1 {
     transform: rotate(5deg);
 }
 
+/* Track info */
+
 .track-info {
-    max-width: 400px;
+    max-width: 420px;
     width: 100%;
 }
 
 .track-name {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: bold;
     margin-bottom: 6px;
 }
 
 .artist-name {
-    color: #bbb;
+    color: var(--muted-color);
     margin-bottom: 16px;
 }
 
@@ -126,9 +173,12 @@ h1 {
     flex: 1;
 }
 
+/* Controls */
+
 .controls {
     display: flex;
     gap: 12px;
+    margin-bottom: 12px;
 }
 
 .controls button {
@@ -137,15 +187,81 @@ h1 {
     border-radius: 999px;
     border: none;
     background: #222;
-    color: #f4f4f4;
+    color: var(--text-color);
     font-size: 1.1rem;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.1s;
 }
 
 .controls button:hover {
     background: #333;
+    transform: translateY(-1px);
 }
+
+/* Volume */
+
+.volume-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    margin: 8px 0 14px;
+}
+
+#volume-bar {
+    flex: 1;
+}
+
+/* Queue */
+
+.queue {
+    margin-top: 8px;
+    font-size: 0.85rem;
+}
+
+.queue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.queue-header button {
+    border-radius: 999px;
+    border: none;
+    background: #222;
+    color: var(--text-color);
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+#queue-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+#queue-list li {
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#queue-list li span {
+    display: block;
+}
+
+.queue-track {
+    font-weight: 500;
+}
+
+.queue-artist {
+    color: var(--muted-color);
+}
+
+/* Animations */
 
 @keyframes spin {
     from {
@@ -157,8 +273,55 @@ h1 {
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
     .player-container {
         flex-direction: column;
     }
+
+    .turntable {
+        width: 320px;
+        height: 320px;
+    }
+
+    .vinyl {
+        width: 260px;
+        height: 260px;
+    }
+
+    .arm {
+        width: 180px;
+        top: 70px;
+    }
+}
+
+/* Skins */
+
+body.theme-wood .player-container {
+    background: linear-gradient(135deg, #3b2410, #5a3415);
+}
+
+body.theme-wood .turntable {
+    background: repeating-linear-gradient(135deg,
+            #4a2b12,
+            #4a2b12 8px,
+            #5e3616 8px,
+            #5e3616 16px);
+}
+
+body.theme-silver .turntable {
+    background: radial-gradient(circle at 30% 30%, #eee, #999);
+}
+
+body.theme-silver .vinyl {
+    background: radial-gradient(circle, #777 0, #222 40%, #000 70%, #000 100%);
+}
+
+body.theme-night {
+    --bg-color: #05040a;
+    --card-bg: #101020;
+    --accent-color: #6f8bff;
+}
+
+body.theme-night .player-container {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
 }

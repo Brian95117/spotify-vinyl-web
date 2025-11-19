@@ -166,7 +166,7 @@ function applyAccentFromImage(img) {
 
 // ================= Spotify 控制 =================
 
-// 把播放裝置切到這個網頁
+// 把播放裝置切到這個網頁（不主動刷新 queue，保持 snapshot）
 async function transferPlayback(deviceId) {
     if (!accessToken) return;
     try {
@@ -181,14 +181,12 @@ async function transferPlayback(deviceId) {
                 play: false,
             }),
         });
-        // 切完裝置後也抓一次 queue
-        fetchQueue();
     } catch (err) {
         console.error("Error transferring playback", err);
     }
 }
 
-// 播放指定 track（點 queue item 用）
+// 播放指定 track（點 queue item 用；不重抓 queue，保持第一次的列表）
 async function playTrack(uri) {
     if (!accessToken || !uri) return;
     try {
@@ -207,14 +205,13 @@ async function playTrack(uri) {
             console.error("Error playing track", await res.text().catch(() => ""));
         }
 
-        // 播放指令丟出去後，主動重抓 queue
-        fetchQueue();
+        // 不呼叫 fetchQueue()，避免 queue 被 Spotify 新算出來的內容洗掉
     } catch (err) {
         console.error("Error playing track", err);
     }
 }
 
-// 更新 UI
+// 更新 UI（不再在這裡重抓 queue）
 function updateUIFromState(state) {
     const track = state.track_window.current_track;
     if (!track) return;
@@ -267,8 +264,7 @@ function updateUIFromState(state) {
         }, 1000);
     }
 
-    // 每次 state 更新，也抓一次 queue（像剛載入那樣）
-    fetchQueue();
+    // 這裡不再 fetchQueue()，避免每次 state 變化就換 queue
 }
 
 // 初始化播放 SDK
@@ -283,8 +279,10 @@ function initPlayer() {
 
     player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
-        // 登入後自動切到這個網頁，並抓 queue
+        // 登入後自動切到這個網頁
         transferPlayback(device_id);
+        // 只在第一次 ready 時抓一次 queue，當作 snapshot
+        fetchQueue();
     });
 
     player.addListener("not_ready", ({ device_id }) => {
@@ -310,6 +308,7 @@ function initPlayer() {
         if (!state) return;
         currentState = state;
         updateUIFromState(state);
+        // 不在這裡 fetchQueue()
     });
 
     player.connect();
@@ -327,7 +326,6 @@ async function fetchQueue() {
         });
 
         if (res.status === 204) {
-            // 沒有 queue
             renderQueue([]);
             return;
         }
@@ -378,7 +376,7 @@ function renderQueue(tracks) {
 
         item.addEventListener("click", () => {
             if (track.uri) {
-                // 點 queue → 播放該曲，並在 playTrack 裡自動 refresh queue
+                // 點 queue 播歌，但不重抓 queue（維持 snapshot）
                 playTrack(track.uri);
             }
         });
@@ -387,6 +385,7 @@ function renderQueue(tracks) {
     });
 }
 
+// 「刷新」按鈕：手動重抓 queue（這時才會看到 Spotify 真實最新 queue）
 queueRefreshBtn?.addEventListener("click", () => fetchQueue());
 
 // ================= 控制按鈕事件 =================
@@ -394,21 +393,19 @@ queueRefreshBtn?.addEventListener("click", () => fetchQueue());
 playBtn.addEventListener("click", () => {
     if (!player) return;
     player.togglePlay();
-    // togglePlay 後，state 變化時也會在 player_state_changed 觸發 fetchQueue
+    // state 變化會由 player_state_changed 處理，不動 queue
 });
 
 prevBtn.addEventListener("click", () => {
     if (!player) return;
     player.previousTrack();
-    // 預防某些情況 state 事件延遲，手動再抓一次
-    fetchQueue();
+    // 不重抓 queue，維持 snapshot；想看最新就按「刷新」
 });
 
 nextBtn.addEventListener("click", () => {
     if (!player) return;
     player.nextTrack();
-    // 同上，主動 refresh
-    fetchQueue();
+    // 一樣不重抓 queue
 });
 
 volumeBar.addEventListener("input", (e) => {
@@ -473,7 +470,6 @@ function startSimpleClock() {
         const hh = now.getHours().toString().padStart(2, "0");
         const mm = now.getMinutes().toString().padStart(2, "0");
 
-        // 第一行時間
         if (!simpleClock.firstChild) {
             simpleClock.appendChild(document.createTextNode(`${hh}:${mm}`));
         } else {
@@ -488,7 +484,6 @@ function startSimpleClock() {
         dateEl.textContent = `${mon}/${dd} ${w}`;
     }
 
-    // 初始化 & 每秒更新
     updateClock();
     setInterval(updateClock, 1000);
 }

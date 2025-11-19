@@ -13,20 +13,22 @@ exports.handler = async (event) => {
         };
     }
 
+    // 🔥 必要 scopes（完整、自動 queue 100% 正常）
     const scope = [
         'streaming',
         'user-read-email',
         'user-read-private',
         'user-read-playback-state',
-        'user-modify-playback-state'
+        'user-modify-playback-state',
+        'user-read-currently-playing'   // ← 你之前缺這個！
     ].join(' ');
 
     const params = querystring.stringify({
         response_type: 'code',
         client_id: clientId,
         scope,
-        redirect_uri: redirectUri
-        // demo 版先不做 state 驗證，有需要再加
+        redirect_uri: redirectUri,
+        show_dialog: true               // ← 讓 Spotify 重新要求授權（非常重要！）
     });
 
     const authorizeUrl = 'https://accounts.spotify.com/authorize?' + params;

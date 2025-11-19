@@ -558,3 +558,35 @@ body.theme-night .player-container {
     color: var(--themeColor, #ffd65c);
     letter-spacing: 1px;
 }
+
+/* ======= 放大 simple-clock ======= */
+#simple-clock {
+    font-size: 42px;
+    /* 調整時間大小 */
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-align: center;
+    color: white;
+
+    margin-top: 20px;
+    margin-bottom: 10px;
+
+    padding: 16px 24px;
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+
+    display: inline-block;
+}
+
+/* 日期與星期 */
+#simple-clock .clock-date {
+    display: block;
+    font-size: 20px;
+    /* 調整日期大小 */
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin-top: 4px;
+    opacity: 0.85;
+}

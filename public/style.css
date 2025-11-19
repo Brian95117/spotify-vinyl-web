@@ -148,8 +148,8 @@ h1 {
     height: 8px;
     background: #c0c0c0;
     border-radius: 6px;
-    top: 50px;
-    right: 230px;
+    top: 40px;
+    right: 240px;
     transform-origin: left center;
     transform: rotate(90deg);
     transition: transform 0.3s ease;
@@ -157,7 +157,7 @@ h1 {
 }
 
 .turntable.playing .arm {
-    transform: rotate(80deg);
+    transform: rotate(70deg);
 }
 
 /* right panel */

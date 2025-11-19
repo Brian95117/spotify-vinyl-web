@@ -68,6 +68,8 @@ let customQueue = []; // 自動 queue 用
 let currentTheme = "auto";
 let lastAccentColor = null;
 
+let hasShownSpotify403 = false; // 403 提示只出現一次
+
 // ================= View 切換 =================
 
 function showLogin() {
@@ -165,13 +167,32 @@ function applyAccentFromImage(img) {
     }
 }
 
+// ================= 403 共用處理 =================
+
+function handleSpotify403() {
+    if (hasShownSpotify403) return;
+    hasShownSpotify403 = true;
+    console.warn("Spotify 403：可能不是 Premium 或尚未被加入測試者。");
+    // 用播放列表區塊顯示提示文字
+    if (queueList) {
+        queueList.innerHTML = "";
+        const msg = document.createElement("div");
+        msg.textContent = "請聯絡開方者施捨你權限或付費解鎖";
+        msg.style.color = "#ffeb3b";
+        msg.style.fontSize = "0.9rem";
+        msg.style.fontWeight = "600";
+        msg.style.padding = "8px 4px";
+        queueList.appendChild(msg);
+    }
+}
+
 // ================= Spotify 控制 =================
 
 // 把播放裝置切到這個網頁
 async function transferPlayback(deviceId) {
     if (!accessToken) return;
     try {
-        await fetch("https://api.spotify.com/v1/me/player", {
+        const res = await fetch("https://api.spotify.com/v1/me/player", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -182,6 +203,15 @@ async function transferPlayback(deviceId) {
                 play: false,
             }),
         });
+
+        if (res.status === 403) {
+            handleSpotify403();
+            return;
+        }
+
+        if (!res.ok) {
+            console.warn("transferPlayback 失敗", await res.text());
+        }
     } catch (err) {
         console.error("Error transferring playback", err);
     }
@@ -191,7 +221,7 @@ async function transferPlayback(deviceId) {
 async function playTrack(uri) {
     if (!accessToken || !uri) return;
     try {
-        await fetch("https://api.spotify.com/v1/me/player/play", {
+        const res = await fetch("https://api.spotify.com/v1/me/player/play", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -201,6 +231,15 @@ async function playTrack(uri) {
                 uris: [uri],
             }),
         });
+
+        if (res.status === 403) {
+            handleSpotify403();
+            return;
+        }
+
+        if (!res.ok) {
+            console.warn("Error playing track", await res.text());
+        }
     } catch (err) {
         console.error("Error playing track", err);
     }
@@ -324,13 +363,43 @@ async function buildQueueFromCurrent(auto = false) {
             }
         );
 
-        if (!playingRes.ok) {
-            if (!auto) console.warn("無法取得目前播放狀態");
+        if (playingRes.status === 403) {
+            handleSpotify403();
+            return;
+        }
+
+        // 204 = Spotify 說「現在沒有播放任何東西」
+        if (playingRes.status === 204) {
+            if (!auto) console.warn("目前沒有正在播放的內容 (204)");
             renderQueue([], auto ? "" : "目前沒有正在播放的內容");
             return;
         }
 
-        const playing = await playingRes.json();
+        if (!playingRes.ok) {
+            if (!auto)
+                console.warn(
+                    "無法取得目前播放狀態",
+                    await playingRes.text().catch(() => "")
+                );
+            renderQueue([], auto ? "" : "目前沒有正在播放的內容");
+            return;
+        }
+
+        const raw = await playingRes.text();
+        if (!raw) {
+            renderQueue([], auto ? "" : "目前沒有正在播放的內容");
+            return;
+        }
+
+        let playing;
+        try {
+            playing = JSON.parse(raw);
+        } catch (e) {
+            console.warn("目前播放 JSON 解析失敗", e);
+            renderQueue([], auto ? "" : "目前沒有正在播放的內容");
+            return;
+        }
+
         const currentTrack = playing.item;
         const context = playing.context;
 
@@ -369,8 +438,17 @@ async function buildQueueFromCurrent(auto = false) {
             },
         });
 
+        if (listRes.status === 403) {
+            handleSpotify403();
+            return;
+        }
+
         if (!listRes.ok) {
-            if (!auto) console.warn("無法取得播放清單 / 專輯曲目");
+            if (!auto)
+                console.warn(
+                    "無法取得播放清單 / 專輯曲目",
+                    await listRes.text().catch(() => "")
+                );
             renderQueue([], auto ? "" : "無法取得播放清單 / 專輯曲目");
             return;
         }
@@ -446,7 +524,7 @@ function renderQueue(tracks, emptyMessage = "") {
     });
 }
 
-// 點「刷新」按鈕時手動重建 queue（如果你有這顆按鈕）
+// 點「刷新」按鈕時手動重建 queue
 queueRefreshBtn?.addEventListener("click", () =>
     buildQueueFromCurrent(false)
 );
@@ -481,7 +559,7 @@ progressBar.addEventListener("input", async (e) => {
     const newPositionMs = Math.floor((percent / 100) * duration);
 
     try {
-        await fetch(
+        const res = await fetch(
             "https://api.spotify.com/v1/me/player/seek?position_ms=" + newPositionMs,
             {
                 method: "PUT",
@@ -490,6 +568,15 @@ progressBar.addEventListener("input", async (e) => {
                 },
             }
         );
+
+        if (res.status === 403) {
+            handleSpotify403();
+            return;
+        }
+
+        if (!res.ok) {
+            console.warn("seek error", await res.text().catch(() => ""));
+        }
     } catch (err) {
         console.error("seek error", err);
     }
@@ -531,7 +618,11 @@ function startSimpleClock() {
         const mm = now.getMinutes().toString().padStart(2, "0");
 
         // 第一行時間
-        simpleClock.childNodes[0].nodeValue = `${hh}:${mm}`;
+        if (!simpleClock.firstChild) {
+            simpleClock.appendChild(document.createTextNode(`${hh}:${mm}`));
+        } else {
+            simpleClock.firstChild.nodeValue = `${hh}:${mm}`;
+        }
 
         const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
         const mon = (now.getMonth() + 1).toString().padStart(2, "0");
@@ -541,10 +632,6 @@ function startSimpleClock() {
         dateEl.textContent = `${mon}/${dd} ${w}`;
     }
 
-    // 初始化 & 每秒更新
-    if (!simpleClock.firstChild) {
-        simpleClock.appendChild(document.createTextNode("00:00"));
-    }
     updateClock();
     setInterval(updateClock, 1000);
 }

@@ -54,9 +54,6 @@ const queueList = document.getElementById("queue-list");
 const queueRefreshBtn = document.getElementById("queue-refresh-btn");
 const volumeBar = document.getElementById("volume-bar");
 
-// flip clock 容器
-const flipClockRoot = document.getElementById("flip-clock");
-
 // ----------- 播放器狀態 -----------
 
 let player = null;
@@ -383,104 +380,2238 @@ if (!accessToken) {
     showLogin();
 }
 
-// ----------- Flip-Clock 風格時鐘 -----------
+// ========== 一般時鐘：HH:MM + 星期 ==========
 
-function createFlipDigitElement(initial = "0") {
-    const digit = document.createElement("div");
-    digit.className = "flip-digit";
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
 
-    const top = document.createElement("div");
-    top.className = "flip-top";
-    top.textContent = initial;
-
-    const bottom = document.createElement("div");
-    bottom.className = "flip-bottom";
-    bottom.textContent = initial;
-
-    digit.appendChild(top);
-    digit.appendChild(bottom);
-
-    return digit;
-}
-
-function initFlipClock() {
-    if (!flipClockRoot) return;
-
-    // 避免被重複初始化
-    flipClockRoot.innerHTML = "";
-
-    const row = document.createElement("div");
-    row.className = "flip-clock-row";
-    flipClockRoot.appendChild(row);
-
-    const dateEl = document.createElement("div");
-    dateEl.className = "flip-date";
-    flipClockRoot.appendChild(dateEl);
-
-    // 兩位小時、兩位分鐘、兩位秒：HH:MM:SS
-    const structure = ["h1", "h2", "colon1", "m1", "m2", "colon2", "s1", "s2"];
-    const digitMap = {};
-
-    structure.forEach((slot) => {
-        if (slot === "colon1" || slot === "colon2") {
-            const colonEl = document.createElement("div");
-            colonEl.className = "flip-colon";
-            colonEl.textContent = ":";
-            row.appendChild(colonEl);
-            return;
-        }
-        const digitEl = createFlipDigitElement("0");
-        row.appendChild(digitEl);
-        digitMap[slot] = digitEl;
-    });
+    const dateEl = clock.querySelector(".clock-date");
 
     function updateClock() {
         const now = new Date();
-        const h = now.getHours().toString().padStart(2, "0");
-        const m = now.getMinutes().toString().padStart(2, "0");
-        const s = now.getSeconds().toString().padStart(2, "0");
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
 
-        const values = {
-            h1: h[0],
-            h2: h[1],
-            m1: m[0],
-            m2: m[1],
-            s1: s[0],
-            s2: s[1],
-        };
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
 
-        Object.entries(values).forEach(([key, newVal]) => {
-            const digitEl = digitMap[key];
-            if (!digitEl) return;
-
-            const top = digitEl.querySelector(".flip-top");
-            const bottom = digitEl.querySelector(".flip-bottom");
-
-            if (top.textContent === newVal) return;
-
-            bottom.textContent = newVal;
-            digitEl.classList.add("flip-anim");
-
-            setTimeout(() => {
-                top.textContent = newVal;
-                digitEl.classList.remove("flip-anim");
-            }, 300);
-        });
-
-        // 日期 + 星期
-        const y = now.getFullYear();
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
         const mon = (now.getMonth() + 1).toString().padStart(2, "0");
-        const d = now.getDate().toString().padStart(2, "0");
-        const weekdayNames = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
-        const w = weekdayNames[now.getDay()];
-        dateEl.textContent = `${y}-${mon}-${d}  ${w}`;
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
     }
 
     updateClock();
     setInterval(updateClock, 1000);
 }
 
-initFlipClock();
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
+
+// ========== 一般時鐘：HH:MM + 星期 ==========
+
+function startSimpleClock() {
+    const clock = document.getElementById("simple-clock");
+    if (!clock) return;
+
+    const dateEl = clock.querySelector(".clock-date");
+
+    function updateClock() {
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, "0");
+        const mm = now.getMinutes().toString().padStart(2, "0");
+
+        clock.childNodes[0].nodeValue = `${hh}:${mm}`;
+
+        const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const dd = now.getDate().toString().padStart(2, "0");
+        const w = weekday[now.getDay()];
+
+        dateEl.textContent = `${mon}/${dd} ${w}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+startSimpleClock();
 
 // -----------（可選）關掉 PWA SW，避免舊版 cache -----------
 

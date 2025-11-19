@@ -108,8 +108,8 @@ h1 {
 
 .turntable {
     position: relative;
-    width: 800px;
-    height: 800px;
+    width: 520px;
+    height: 520px;
     background: var(--turntable-bg);
     border-radius: 32px;
     display: flex;
@@ -119,8 +119,8 @@ h1 {
 }
 
 .vinyl {
-    width: 720px;
-    height: 720px;
+    width: 450px;
+    height: 450px;
     border-radius: 50%;
     background: var(--vinyl-bg);
     border: 12px solid #111;
@@ -462,4 +462,27 @@ body.theme-night .player-container {
     to {
         transform: rotateX(0deg);
     }
+}
+
+/* ===== 一般時鐘（不翻頁） ===== */
+
+.simple-clock {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.1;
+    padding: 4px 10px;
+    border-radius: 12px;
+    color: var(--text-color);
+    background: rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    min-width: 120px;
+    letter-spacing: 2px;
+}
+
+.simple-clock .clock-date {
+    font-size: 0.7rem;
+    font-weight: 400;
+    opacity: 0.85;
+    letter-spacing: 2px;
 }

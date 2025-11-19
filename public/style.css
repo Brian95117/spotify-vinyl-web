@@ -148,8 +148,8 @@ h1 {
     height: 8px;
     background: #c0c0c0;
     border-radius: 6px;
-    top: 110px;
-    right: -6px;
+    top: 100px;
+    right: -30px;
     transform-origin: left center;
     transform: rotate(25deg);
     transition: transform 0.3s ease;

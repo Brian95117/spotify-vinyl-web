@@ -103,9 +103,9 @@ h1 {
 }
 
 .vinyl {
-    width: 400px;
+    width: 800px;
     /* 原本 200 → x2 */
-    height: 400px;
+    height: 800px;
     border-radius: 50%;
     background: var(--vinyl-bg);
     border: 12px solid #111;

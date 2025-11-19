@@ -3,6 +3,8 @@
     --text-color: #f4f4f4;
     --muted-color: #bbbbbb;
     --accent-color: #1db954;
+    --theme-color: #1db954;
+    /* 主題色，auto 模式會由專輯主色控制 */
     --card-bg: #111219;
     --turntable-bg: radial-gradient(circle at 30% 30%, #333, #000);
     --vinyl-bg: radial-gradient(circle, #444 0, #000 40%, #111 60%, #000 100%);
@@ -16,7 +18,9 @@ body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     background:
-        radial-gradient(circle at top, #20254a, transparent 55%),
+        radial-gradient(circle at top,
+            color-mix(in srgb, var(--theme-color) 45%, #20254a 55%),
+            transparent 55%),
         radial-gradient(circle at bottom, #111, var(--bg-color));
     color: var(--text-color);
 }
@@ -68,7 +72,7 @@ h1 {
 
 .logo {
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.18em;
     font-size: 0.9rem;
     text-transform: uppercase;
     opacity: 0.9;
@@ -92,18 +96,20 @@ h1 {
     gap: 28px;
     justify-content: space-between;
     align-items: center;
-    background: radial-gradient(circle at top left, #262a47, var(--card-bg));
+    background: radial-gradient(circle at top left,
+            color-mix(in srgb, var(--theme-color) 40%, #111219 60%),
+            var(--card-bg));
     border-radius: 24px;
     padding: 26px;
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
 }
 
-/* turntable – 盤子加大 */
+/* turntable */
 
 .turntable {
     position: relative;
-    width: 520px;
-    height: 520px;
+    width: 800px;
+    height: 800px;
     background: var(--turntable-bg);
     border-radius: 32px;
     display: flex;
@@ -113,8 +119,8 @@ h1 {
 }
 
 .vinyl {
-    width: 400px;
-    height: 400px;
+    width: 720px;
+    height: 720px;
     border-radius: 50%;
     background: var(--vinyl-bg);
     border: 12px solid #111;
@@ -360,20 +366,28 @@ body.theme-night .player-container {
     background: radial-gradient(circle at top, #191c4f, var(--card-bg));
 }
 
-/* ===== 翻頁時鐘 ===== */
+/* ===== Flip-Clock 風格翻頁時鐘 ===== */
 
-.flip-clock {
+.flip-clock-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center;
+    transform: scale(0.95);
+}
+
+.flip-clock-row {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.9rem;
+    gap: 8px;
 }
 
 .flip-digit {
     position: relative;
-    width: 22px;
-    height: 28px;
-    perspective: 400px;
+    width: 36px;
+    height: 56px;
+    perspective: 600px;
 }
 
 .flip-top,
@@ -385,35 +399,49 @@ body.theme-night .player-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #191c2a;
+    background: #10121e;
     color: var(--text-color);
-    border-radius: 4px;
+    border-radius: 6px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
 }
 
 .flip-top {
     top: 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.7);
 }
 
 .flip-bottom {
     bottom: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .flip-colon {
-    padding: 0 3px;
+    padding: 0 6px;
     font-weight: 700;
-    opacity: 0.8;
+    font-size: 1.4rem;
+    opacity: 0.9;
 }
+
+.flip-date {
+    margin-top: 4px;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* flip 動畫 */
 
 .flip-digit.flip-anim .flip-top {
     animation: flipTop 0.3s ease-out;
+    transform-origin: center bottom;
 }
 
 .flip-digit.flip-anim .flip-bottom {
     animation: flipBottom 0.3s ease-out;
+    transform-origin: center top;
 }
 
 @keyframes flipTop {

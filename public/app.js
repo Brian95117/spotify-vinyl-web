@@ -78,24 +78,33 @@ function showPlayer() {
     playerView.classList.remove("hidden");
 }
 
-// ----------- 主題 / 皮膚 -----------
+// ----------- 主題 / 皮膚（包含跟專輯顏色改整個主題） -----------
 
 function setTheme(theme) {
     currentTheme = theme;
-    document.body.classList.remove("theme-wood", "theme-silver", "theme-night");
+    document.body.classList.remove("theme-wood", "theme-silver", "theme-night", "theme-auto");
 
     if (theme === "wood") {
         document.body.classList.add("theme-wood");
         document.documentElement.style.setProperty("--accent-color", "#e0c48c");
+        document.documentElement.style.setProperty("--theme-color", "#c2954b");
     } else if (theme === "silver") {
         document.body.classList.add("theme-silver");
         document.documentElement.style.setProperty("--accent-color", "#1db954");
+        document.documentElement.style.setProperty("--theme-color", "#6f7c8a");
     } else if (theme === "night") {
         document.body.classList.add("theme-night");
         document.documentElement.style.setProperty("--accent-color", "#6f8bff");
+        document.documentElement.style.setProperty("--theme-color", "#4b5cff");
     } else {
+        // auto：跟專輯顏色
+        document.body.classList.add("theme-auto");
         document.documentElement.style.setProperty(
             "--accent-color",
+            lastAccentColor || "#1db954"
+        );
+        document.documentElement.style.setProperty(
+            "--theme-color",
             lastAccentColor || "#1db954"
         );
     }
@@ -105,7 +114,8 @@ themeSelect?.addEventListener("change", (e) => {
     setTheme(e.target.value);
 });
 
-// 從專輯封面抓主色調（只在 auto 模式時生效）
+// 從專輯封面抓主色調，給 auto 模式用
+
 function applyAccentFromImage(img) {
     try {
         const canvas = document.createElement("canvas");
@@ -126,9 +136,9 @@ function applyAccentFromImage(img) {
             b += data[i + 2];
             count++;
         }
-        r = Math.round((r / count) * 1.15);
-        g = Math.round((g / count) * 1.15);
-        b = Math.round((b / count) * 1.15);
+        r = Math.round((r / count) * 1.1);
+        g = Math.round((g / count) * 1.1);
+        b = Math.round((b / count) * 1.1);
         r = Math.min(255, r);
         g = Math.min(255, g);
         b = Math.min(255, b);
@@ -138,11 +148,13 @@ function applyAccentFromImage(img) {
 
         if (currentTheme === "auto") {
             document.documentElement.style.setProperty("--accent-color", color);
+            document.documentElement.style.setProperty("--theme-color", color);
         }
     } catch (err) {
         console.warn("Failed to extract accent color, fallback", err);
         if (currentTheme === "auto") {
             document.documentElement.style.setProperty("--accent-color", "#1db954");
+            document.documentElement.style.setProperty("--theme-color", "#1db954");
         }
     }
 }
@@ -371,7 +383,7 @@ if (!accessToken) {
     showLogin();
 }
 
-// ----------- Flip Clock（翻頁時鐘） -----------
+// ----------- Flip-Clock 風格時鐘 -----------
 
 function createFlipDigitElement(initial = "0") {
     const digit = document.createElement("div");
@@ -394,21 +406,31 @@ function createFlipDigitElement(initial = "0") {
 function initFlipClock() {
     if (!flipClockRoot) return;
 
-    flipClockRoot.classList.add("flip-clock");
+    // 避免被重複初始化
+    flipClockRoot.innerHTML = "";
 
-    const structure = ["h1", "h2", "colon", "m1", "m2"];
+    const row = document.createElement("div");
+    row.className = "flip-clock-row";
+    flipClockRoot.appendChild(row);
+
+    const dateEl = document.createElement("div");
+    dateEl.className = "flip-date";
+    flipClockRoot.appendChild(dateEl);
+
+    // 兩位小時、兩位分鐘、兩位秒：HH:MM:SS
+    const structure = ["h1", "h2", "colon1", "m1", "m2", "colon2", "s1", "s2"];
     const digitMap = {};
 
     structure.forEach((slot) => {
-        if (slot === "colon") {
+        if (slot === "colon1" || slot === "colon2") {
             const colonEl = document.createElement("div");
             colonEl.className = "flip-colon";
             colonEl.textContent = ":";
-            flipClockRoot.appendChild(colonEl);
+            row.appendChild(colonEl);
             return;
         }
         const digitEl = createFlipDigitElement("0");
-        flipClockRoot.appendChild(digitEl);
+        row.appendChild(digitEl);
         digitMap[slot] = digitEl;
     });
 
@@ -416,12 +438,15 @@ function initFlipClock() {
         const now = new Date();
         const h = now.getHours().toString().padStart(2, "0");
         const m = now.getMinutes().toString().padStart(2, "0");
+        const s = now.getSeconds().toString().padStart(2, "0");
 
         const values = {
             h1: h[0],
             h2: h[1],
             m1: m[0],
             m2: m[1],
+            s1: s[0],
+            s2: s[1],
         };
 
         Object.entries(values).forEach(([key, newVal]) => {
@@ -441,6 +466,14 @@ function initFlipClock() {
                 digitEl.classList.remove("flip-anim");
             }, 300);
         });
+
+        // 日期 + 星期
+        const y = now.getFullYear();
+        const mon = (now.getMonth() + 1).toString().padStart(2, "0");
+        const d = now.getDate().toString().padStart(2, "0");
+        const weekdayNames = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+        const w = weekdayNames[now.getDay()];
+        dateEl.textContent = `${y}-${mon}-${d}  ${w}`;
     }
 
     updateClock();
@@ -449,12 +482,13 @@ function initFlipClock() {
 
 initFlipClock();
 
-// ----------- PWA Service Worker -----------
+// -----------（可選）關掉 PWA SW，避免舊版 cache -----------
 
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-        navigator.serviceWorker
-            .register("/sw.js")
-            .catch((err) => console.error("SW registration failed", err));
-    });
-}
+// 如果你之後想再開啟 PWA，就把下面註解拿掉
+// if ("serviceWorker" in navigator) {
+//   window.addEventListener("load", () => {
+//     navigator.serviceWorker
+//       .register("/sw.js")
+//       .catch((err) => console.error("SW registration failed", err));
+//   });
+// }

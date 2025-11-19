@@ -63,6 +63,8 @@ const simpleClock = document.getElementById("simple-clock");
 let player = null;
 let currentState = null;
 let progressInterval = null;
+let customQueue = []; // 自動 queue 用
+
 
 let currentTheme = "auto";
 let lastAccentColor = null;
@@ -300,39 +302,126 @@ function initPlayer() {
         if (!state) return;
         currentState = state;
         updateUIFromState(state);
+
+        // 歌曲切換 / 播放狀態變化時，自動重建 queue
+        buildQueueFromCurrent(true);
     });
+
 
     player.connect();
 }
 
-// ================= Queue（播放列表） =================
+// ================= 自動 Queue（從播放清單/專輯產生） =================
 
-async function fetchQueue() {
-    if (!accessToken) return;
+// auto = true 時代表是「歌曲切換時自動更新」，錯了也不要吵使用者
+async function buildQueueFromCurrent(auto = false) {
+    if (!accessToken || !queueList) return;
+
     try {
-        const res = await fetch("https://api.spotify.com/v1/me/player/queue", {
+        // 1. 先問現在在播什麼，順便拿 context（播放清單/專輯）
+        const playingRes = await fetch(
+            "https://api.spotify.com/v1/me/player/currently-playing",
+            {
+                headers: {
+                    Authorization: "Bearer " + accessToken,
+                },
+            }
+        );
+
+        if (!playingRes.ok) {
+            if (!auto) console.warn("無法取得目前播放狀態");
+            renderQueue([],
+                auto ? "" : "目前沒有正在播放的內容"
+            );
+            return;
+        }
+
+        const playing = await playingRes.json();
+        const currentTrack = playing.item;
+        const context = playing.context;
+
+        if (!currentTrack || !context || !context.uri) {
+            renderQueue(
+                [],
+                auto ? "" : "目前播放不是來自播放清單 / 專輯，無法自動產生 queue"
+            );
+            return;
+        }
+
+        const currentTrackId = currentTrack.id;
+
+        // 2. 看 context 是 playlist 還是 album，只處理這兩種
+        const uriParts = context.uri.split(":");
+        const type = uriParts[1]; // 'playlist' or 'album'
+        const id = uriParts[2];
+
+        if (type !== "playlist" && type !== "album") {
+            renderQueue(
+                [],
+                auto ? "" : "目前播放不是播放清單 / 專輯，無法自動產生 queue"
+            );
+            return;
+        }
+
+        // 3. 把整個播放清單/專輯抓下來（最多抓前 100 首就夠玩了）
+        const endpoint =
+            type === "playlist"
+                ? `https://api.spotify.com/v1/playlists/${id}/tracks?limit=100`
+                : `https://api.spotify.com/v1/albums/${id}/tracks?limit=50`;
+
+        const listRes = await fetch(endpoint, {
             headers: {
                 Authorization: "Bearer " + accessToken,
             },
         });
-        if (!res.ok) throw new Error("Failed to fetch queue");
-        const data = await res.json();
-        renderQueue(data.queue || []);
+
+        if (!listRes.ok) {
+            if (!auto) console.warn("無法取得播放清單 / 專輯曲目");
+            renderQueue([], auto ? "" : "無法取得播放清單 / 專輯曲目");
+            return;
+        }
+
+        const listData = await listRes.json();
+
+        // playlist 回傳 items[].track
+        // album 回傳 items[]（本身就是 track）
+        const items = (listData.items || []).map((item) =>
+            item.track ? item.track : item
+        );
+
+        // 4. 找出目前這首在清單裡的位置
+        const currentIndex = items.findIndex((t) => t && t.id === currentTrackId);
+
+        if (currentIndex === -1) {
+            renderQueue([], auto ? "" : "在清單中找不到目前這首歌");
+            return;
+        }
+
+        // 5. 從目前位置後面開始，取出 20 首當成 queue
+        const nextTracks = items.slice(currentIndex + 1, currentIndex + 1 + 20);
+
+        customQueue = nextTracks;
+        renderQueue(customQueue);
     } catch (err) {
-        console.error("Error fetching queue", err);
+        console.error("自動 queue 發生錯誤", err);
+        if (!auto) {
+            renderQueue([], "產生自動 queue 時發生錯誤");
+        }
     }
 }
 
-function renderQueue(tracks) {
+function renderQueue(tracks, emptyMessage = "") {
     if (!queueList) return;
     queueList.innerHTML = "";
 
-    if (!tracks.length) {
-        const empty = document.createElement("div");
-        empty.textContent = "目前沒有接下來的歌曲";
-        empty.style.opacity = "0.7";
-        empty.style.fontSize = "0.85rem";
-        queueList.appendChild(empty);
+    if (!tracks || !tracks.length) {
+        if (emptyMessage) {
+            const empty = document.createElement("div");
+            empty.textContent = emptyMessage;
+            empty.style.opacity = "0.7";
+            empty.style.fontSize = "0.85rem";
+            queueList.appendChild(empty);
+        }
         return;
     }
 
@@ -346,14 +435,16 @@ function renderQueue(tracks) {
 
         const artist = document.createElement("div");
         artist.className = "queue-artist";
-        artist.textContent = track.artists.map((a) => a.name).join(", ");
+        artist.textContent = (track.artists || [])
+            .map((a) => a.name)
+            .join(", ");
 
         item.appendChild(title);
         item.appendChild(artist);
 
         item.addEventListener("click", () => {
             if (track.uri) {
-                playTrack(track.uri);
+                playTrack(track.uri); // 這是你上面已經有的函式
             }
         });
 
@@ -361,66 +452,11 @@ function renderQueue(tracks) {
     });
 }
 
-queueRefreshBtn?.addEventListener("click", () => fetchQueue());
+// 點「刷新」按鈕時手動重建 queue（如果你有這顆按鈕）
+queueRefreshBtn?.addEventListener("click", () =>
+    buildQueueFromCurrent(false)
+);
 
-// ================= 控制按鈕事件 =================
-
-playBtn.addEventListener("click", () => {
-    if (!player) return;
-    player.togglePlay();
-});
-
-prevBtn.addEventListener("click", () => {
-    if (!player) return;
-    player.previousTrack();
-});
-
-nextBtn.addEventListener("click", () => {
-    if (!player) return;
-    player.nextTrack();
-});
-
-volumeBar.addEventListener("input", (e) => {
-    const value = parseInt(e.target.value, 10) / 100;
-    if (!player) return;
-    player.setVolume(value);
-});
-
-progressBar.addEventListener("input", async (e) => {
-    if (!currentState || !accessToken) return;
-    const percent = parseInt(e.target.value, 10);
-    const duration = currentState.duration;
-    const newPositionMs = Math.floor((percent / 100) * duration);
-
-    try {
-        await fetch(
-            "https://api.spotify.com/v1/me/player/seek?position_ms=" + newPositionMs,
-            {
-                method: "PUT",
-                headers: {
-                    Authorization: "Bearer " + accessToken,
-                },
-            }
-        );
-    } catch (err) {
-        console.error("seek error", err);
-    }
-});
-
-// ================= Spotify SDK Ready =================
-
-window.onSpotifyWebPlaybackSDKReady = () => {
-    if (!accessToken) {
-        showLogin();
-        return;
-    }
-    initPlayer();
-};
-
-// 初次進入頁面：沒有 token 就顯示登入
-if (!accessToken) {
-    showLogin();
-}
 
 // ================= 一般時鐘（非翻頁） =================
 

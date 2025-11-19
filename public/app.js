@@ -54,7 +54,7 @@ const queueList = document.getElementById("queue-list");
 const queueRefreshBtn = document.getElementById("queue-refresh-btn");
 const volumeBar = document.getElementById("volume-bar");
 
-// flip clock 容器（記得在 index.html 加上 <div id="flip-clock"></div>）
+// flip clock 容器
 const flipClockRoot = document.getElementById("flip-clock");
 
 // ----------- 播放器狀態 -----------
@@ -94,7 +94,6 @@ function setTheme(theme) {
         document.body.classList.add("theme-night");
         document.documentElement.style.setProperty("--accent-color", "#6f8bff");
     } else {
-        // auto：讓專輯顏色來決定，沒有時用預設綠
         document.documentElement.style.setProperty(
             "--accent-color",
             lastAccentColor || "#1db954"
@@ -180,8 +179,9 @@ function updateUIFromState(state) {
     if (image) {
         albumImage.crossOrigin = "anonymous";
         albumImage.onload = () => applyAccentFromImage(albumImage);
-        // 加上時間戳，確保 onload 一定觸發
-        albumImage.src = image.url + (image.url.includes("?") ? "&" : "?") + "t=" + Date.now();
+        const url =
+            image.url + (image.url.includes("?") ? "&" : "?") + "t=" + Date.now();
+        albumImage.src = url;
     }
 
     const position = state.position;
@@ -234,7 +234,7 @@ function initPlayer() {
 
     player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
-        transferPlayback(device_id); // 登入後自動切換到這個網頁播放
+        transferPlayback(device_id);
     });
 
     player.addListener("not_ready", ({ device_id }) => {
@@ -396,7 +396,6 @@ function initFlipClock() {
 
     flipClockRoot.classList.add("flip-clock");
 
-    // HH:MM 格式，建立 4 個 digit + 1 個冒號
     const structure = ["h1", "h2", "colon", "m1", "m2"];
     const digitMap = {};
 
@@ -434,7 +433,6 @@ function initFlipClock() {
 
             if (top.textContent === newVal) return;
 
-            // 做個簡單的翻動效果：先把 bottom 改成新值，再加上動畫 class
             bottom.textContent = newVal;
             digitEl.classList.add("flip-anim");
 

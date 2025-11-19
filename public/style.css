@@ -51,11 +51,13 @@ h1 {
     font-weight: 600;
 }
 
-/* top bar */
+/* 通用 view */
 
 .view.hidden {
     display: none;
 }
+
+/* top bar */
 
 .top-bar {
     display: flex;
@@ -184,14 +186,12 @@ h1 {
     flex: 1;
 }
 
-/* range 通用樣式，支援 accent-color 的瀏覽器會直接吃變數 */
-
 input[type="range"] {
     width: 100%;
     accent-color: var(--accent-color);
 }
 
-/* 控制列 */
+/* controls */
 
 .controls {
     display: flex;

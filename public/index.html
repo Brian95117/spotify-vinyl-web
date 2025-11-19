@@ -12,15 +12,20 @@
 
 <body>
     <div id="app">
+        <!-- 登入畫面 -->
         <div id="login-view" class="view">
             <h1>Spotify Vinyl Player</h1>
             <p>請先登入 Spotify 以開始使用。</p>
             <a href="/.netlify/functions/login" class="btn">Login with Spotify</a>
         </div>
 
+        <!-- 播放器畫面 -->
         <div id="player-view" class="view hidden">
             <div class="top-bar">
                 <div class="logo">Spotify Vinyl Player</div>
+                <!-- 翻頁時鐘 -->
+                <div id="flip-clock"></div>
+                <!-- 皮膚選單 -->
                 <div class="theme-switcher">
                     <label>
                         皮膚：
@@ -35,20 +40,25 @@
             </div>
 
             <div class="player-container">
+                <!-- 左側：黑膠唱盤 -->
                 <div class="turntable">
                     <div class="vinyl">
                         <img id="album-image" src="" alt="Album Art" />
                     </div>
                     <div class="arm" id="tone-arm"></div>
                 </div>
+
+                <!-- 右側：曲目資訊與控制 -->
                 <div class="track-info">
                     <div id="track-name" class="track-name">曲名</div>
                     <div id="artist-name" class="artist-name">歌手</div>
+
                     <div class="progress-container">
                         <span id="current-time">0:00</span>
                         <input type="range" id="progress-bar" min="0" max="100" value="0" />
                         <span id="duration">0:00</span>
                     </div>
+
                     <div class="controls">
                         <button id="prev-btn">⏮</button>
                         <button id="play-btn">⏯</button>
@@ -72,7 +82,9 @@
         </div>
     </div>
 
+    <!-- 你的主程式 -->
     <script src="app.js"></script>
+    <!-- Spotify Web Playback SDK -->
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
 </body>
 

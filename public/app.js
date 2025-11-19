@@ -263,8 +263,6 @@ function updateUIFromState(state) {
             progressBar.value = newPercent;
         }, 1000);
     }
-
-    // 這裡不再 fetchQueue()，避免每次 state 變化就換 queue
 }
 
 // 初始化播放 SDK
@@ -390,30 +388,50 @@ queueRefreshBtn?.addEventListener("click", () => fetchQueue());
 
 // ================= 控制按鈕事件 =================
 
+// 播放 / 暫停：仍交給 Web Playback SDK（togglePlay）
 playBtn.addEventListener("click", () => {
     if (!player) return;
     player.togglePlay();
-    // state 變化會由 player_state_changed 處理，不動 queue
 });
 
-prevBtn.addEventListener("click", () => {
-    if (!player) return;
-    player.previousTrack();
-    // 不重抓 queue，維持 snapshot；想看最新就按「刷新」
+// ✅ 上一首 / 下一首：改用 Web API 控制，跟真實 queue 同步
+prevBtn.addEventListener("click", async () => {
+    if (!accessToken) return;
+    try {
+        await fetch("https://api.spotify.com/v1/me/player/previous", {
+            method: "POST",
+            headers: {
+                Authorization: "Bearer " + accessToken,
+            },
+        });
+        // 不主動重抓 queue，UI 交給 player_state_changed 更新
+    } catch (err) {
+        console.error("previous track error", err);
+    }
 });
 
-nextBtn.addEventListener("click", () => {
-    if (!player) return;
-    player.nextTrack();
-    // 一樣不重抓 queue
+nextBtn.addEventListener("click", async () => {
+    if (!accessToken) return;
+    try {
+        await fetch("https://api.spotify.com/v1/me/player/next", {
+            method: "POST",
+            headers: {
+                Authorization: "Bearer " + accessToken,
+            },
+        });
+    } catch (err) {
+        console.error("next track error", err);
+    }
 });
 
+// 音量
 volumeBar.addEventListener("input", (e) => {
     const value = parseInt(e.target.value, 10) / 100;
     if (!player) return;
     player.setVolume(value);
 });
 
+// 進度條拖動
 progressBar.addEventListener("input", async (e) => {
     if (!currentState || !accessToken) return;
     const percent = parseInt(e.target.value, 10);

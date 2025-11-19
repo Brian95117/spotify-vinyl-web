@@ -1,0 +1,53 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Spotify Vinyl Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div id="app">
+        <div id="login-view" class="view">
+            <h1>Spotify Vinyl Player</h1>
+            <p>請先登入 Spotify 以開始使用。</p>
+            <a href="/.netlify/functions/login" class="btn">Login with Spotify</a>
+        </div>
+
+        <div id="player-view" class="view hidden">
+            <h1>Spotify Vinyl Player</h1>
+            <div class="player-container">
+                <div class="turntable">
+                    <div class="vinyl">
+                        <img id="album-image" src="" alt="Album Art" />
+                    </div>
+                    <div class="arm" id="tone-arm"></div>
+                </div>
+                <div class="track-info">
+                    <div id="track-name" class="track-name">曲名</div>
+                    <div id="artist-name" class="artist-name">歌手</div>
+                    <div class="progress-container">
+                        <span id="current-time">0:00</span>
+                        <input type="range" id="progress-bar" min="0" max="100" value="0" />
+                        <span id="duration">0:00</span>
+                    </div>
+                    <div class="controls">
+                        <button id="prev-btn">⏮</button>
+                        <button id="play-btn">⏯</button>
+                        <button id="next-btn">⏭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 先載入你的 app.js -->
+    <script src="app.js"></script>
+    <!-- 再載入 Spotify Web Playback SDK（會呼叫全域的 window.onSpotifyWebPlaybackSDKReady） -->
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+</body>
+
+</html>

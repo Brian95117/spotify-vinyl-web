@@ -1,0 +1,164 @@
+/* public/style.css */
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #111;
+    color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#app {
+    max-width: 900px;
+    width: 100%;
+    padding: 20px;
+}
+
+.view.hidden {
+    display: none;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #1db954;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 999px;
+    font-weight: bold;
+}
+
+#login-view {
+    text-align: center;
+}
+
+.player-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.turntable {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle at 30% 30%, #333, #000);
+    border-radius: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.vinyl {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #444 0, #000 40%, #111 60%, #000 100%);
+    border: 6px solid #111;
+    overflow: hidden;
+    animation: spin 20s linear infinite;
+    animation-play-state: paused;
+    /* 預設不轉，播放時再啟動 */
+}
+
+.vinyl img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.turntable.playing .vinyl {
+    animation-play-state: running;
+}
+
+.arm {
+    position: absolute;
+    width: 140px;
+    height: 6px;
+    background: #888;
+    border-radius: 6px;
+    top: 45px;
+    right: -20px;
+    transform-origin: left center;
+    transform: rotate(25deg);
+    transition: transform 0.3s ease;
+}
+
+.turntable.playing .arm {
+    transform: rotate(5deg);
+}
+
+.track-info {
+    max-width: 400px;
+    width: 100%;
+}
+
+.track-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.artist-name {
+    color: #bbb;
+    margin-bottom: 16px;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+#progress-bar {
+    flex: 1;
+}
+
+.controls {
+    display: flex;
+    gap: 12px;
+}
+
+.controls button {
+    flex: 1;
+    padding: 10px 0;
+    border-radius: 999px;
+    border: none;
+    background: #222;
+    color: #f4f4f4;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.controls button:hover {
+    background: #333;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 600px) {
+    .player-container {
+        flex-direction: column;
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "name": "spotify-vinyl-web",
+    "version": "1.0.0",
+    "description": "Spotify vinyl-style web player deployed on Netlify",
+    "scripts": {
+        "build": "echo \"No build step\"",
+        "start": "echo \"Deploy to Netlify to run\""
+    },
+    "dependencies": {
+        "axios": "^1.7.0"
+    }
+}

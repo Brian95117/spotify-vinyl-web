@@ -108,8 +108,8 @@ h1 {
 
 .turntable {
     position: relative;
-    width: 520px;
-    height: 520px;
+    width: 525px;
+    height: 525px;
     background: var(--turntable-bg);
     border-radius: 32px;
     display: flex;
@@ -148,7 +148,7 @@ h1 {
     height: 8px;
     background: #c0c0c0;
     border-radius: 6px;
-    top: 40px;
+    top: 30px;
     right: 240px;
     transform-origin: left center;
     transform: rotate(90deg);

@@ -65,7 +65,6 @@ let currentState = null;
 let progressInterval = null;
 let customQueue = []; // 自動 queue 用
 
-
 let currentTheme = "auto";
 let lastAccentColor = null;
 
@@ -259,8 +258,6 @@ function updateUIFromState(state) {
             progressBar.value = newPercent;
         }, 1000);
     }
-
-    fetchQueue();
 }
 
 // 初始化播放 SDK
@@ -307,7 +304,6 @@ function initPlayer() {
         buildQueueFromCurrent(true);
     });
 
-
     player.connect();
 }
 
@@ -330,9 +326,7 @@ async function buildQueueFromCurrent(auto = false) {
 
         if (!playingRes.ok) {
             if (!auto) console.warn("無法取得目前播放狀態");
-            renderQueue([],
-                auto ? "" : "目前沒有正在播放的內容"
-            );
+            renderQueue([], auto ? "" : "目前沒有正在播放的內容");
             return;
         }
 
@@ -444,7 +438,7 @@ function renderQueue(tracks, emptyMessage = "") {
 
         item.addEventListener("click", () => {
             if (track.uri) {
-                playTrack(track.uri); // 這是你上面已經有的函式
+                playTrack(track.uri);
             }
         });
 
@@ -457,6 +451,64 @@ queueRefreshBtn?.addEventListener("click", () =>
     buildQueueFromCurrent(false)
 );
 
+// ================= 播放控制與 Slider =================
+
+playBtn.addEventListener("click", () => {
+    if (!player) return;
+    player.togglePlay();
+});
+
+prevBtn.addEventListener("click", () => {
+    if (!player) return;
+    player.previousTrack();
+});
+
+nextBtn.addEventListener("click", () => {
+    if (!player) return;
+    player.nextTrack();
+});
+
+volumeBar.addEventListener("input", (e) => {
+    const value = parseInt(e.target.value, 10) / 100;
+    if (!player) return;
+    player.setVolume(value);
+});
+
+progressBar.addEventListener("input", async (e) => {
+    if (!currentState || !accessToken) return;
+    const percent = parseInt(e.target.value, 10);
+    const duration = currentState.duration;
+    const newPositionMs = Math.floor((percent / 100) * duration);
+
+    try {
+        await fetch(
+            "https://api.spotify.com/v1/me/player/seek?position_ms=" + newPositionMs,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: "Bearer " + accessToken,
+                },
+            }
+        );
+    } catch (err) {
+        console.error("seek error", err);
+    }
+});
+
+// ================= Spotify SDK Ready =================
+
+window.onSpotifyWebPlaybackSDKReady = () => {
+    if (!accessToken) {
+        showLogin();
+        return;
+    }
+    initPlayer();
+};
+
+// 初次進入頁面：沒有 token 就顯示登入
+if (!accessToken) {
+    showLogin();
+}
 
 // ================= 一般時鐘（非翻頁） =================
 
@@ -499,8 +551,8 @@ function startSimpleClock() {
 
 startSimpleClock();
 
-// =================（可選）關掉 Service Worker =================
-// 如果之後要做 PWA，再把下面打開即可
+// =================（可選）Service Worker =================
+// 若之後要做 PWA 再打開
 // if ("serviceWorker" in navigator) {
 //   window.addEventListener("load", () => {
 //     navigator.serviceWorker

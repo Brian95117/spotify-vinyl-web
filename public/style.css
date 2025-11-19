@@ -360,7 +360,6 @@ body.theme-night .player-container {
     background: radial-gradient(circle at top, #191c4f, var(--card-bg));
 }
 
-
 /* ===== 翻頁時鐘 ===== */
 
 .flip-clock {
@@ -409,7 +408,6 @@ body.theme-night .player-container {
     opacity: 0.8;
 }
 
-/* 簡易翻頁動畫 */
 .flip-digit.flip-anim .flip-top {
     animation: flipTop 0.3s ease-out;
 }

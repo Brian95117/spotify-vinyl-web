@@ -100,8 +100,8 @@ h1 {
 
 .turntable {
     position: relative;
-    width: 1000px;
-    height: 1000px;
+    width: 520px;
+    height: 520px;
     background: var(--turntable-bg);
     border-radius: 32px;
     display: flex;
@@ -111,8 +111,8 @@ h1 {
 }
 
 .vinyl {
-    width: 1200px;
-    height: 1200px;
+    width: 400px;
+    height: 400px;
     border-radius: 50%;
     background: var(--vinyl-bg);
     border: 12px solid #111;

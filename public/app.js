@@ -181,6 +181,8 @@ async function transferPlayback(deviceId) {
                 play: false,
             }),
         });
+        // 切完裝置後也抓一次 queue
+        fetchQueue();
     } catch (err) {
         console.error("Error transferring playback", err);
     }
@@ -190,7 +192,7 @@ async function transferPlayback(deviceId) {
 async function playTrack(uri) {
     if (!accessToken || !uri) return;
     try {
-        await fetch("https://api.spotify.com/v1/me/player/play", {
+        const res = await fetch("https://api.spotify.com/v1/me/player/play", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -200,6 +202,13 @@ async function playTrack(uri) {
                 uris: [uri],
             }),
         });
+
+        if (!res.ok) {
+            console.error("Error playing track", await res.text().catch(() => ""));
+        }
+
+        // 播放指令丟出去後，主動重抓 queue
+        fetchQueue();
     } catch (err) {
         console.error("Error playing track", err);
     }
@@ -258,6 +267,7 @@ function updateUIFromState(state) {
         }, 1000);
     }
 
+    // 每次 state 更新，也抓一次 queue（像剛載入那樣）
     fetchQueue();
 }
 
@@ -273,7 +283,7 @@ function initPlayer() {
 
     player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
-        // 登入後自動切到這個網頁
+        // 登入後自動切到這個網頁，並抓 queue
         transferPlayback(device_id);
     });
 
@@ -308,18 +318,31 @@ function initPlayer() {
 // ================= Queue（播放列表） =================
 
 async function fetchQueue() {
-    if (!accessToken) return;
+    if (!accessToken || !queueList) return;
     try {
         const res = await fetch("https://api.spotify.com/v1/me/player/queue", {
             headers: {
                 Authorization: "Bearer " + accessToken,
             },
         });
-        if (!res.ok) throw new Error("Failed to fetch queue");
+
+        if (res.status === 204) {
+            // 沒有 queue
+            renderQueue([]);
+            return;
+        }
+
+        if (!res.ok) {
+            console.error("Failed to fetch queue", await res.text().catch(() => ""));
+            renderQueue([]);
+            return;
+        }
+
         const data = await res.json();
         renderQueue(data.queue || []);
     } catch (err) {
         console.error("Error fetching queue", err);
+        renderQueue([]);
     }
 }
 
@@ -346,13 +369,16 @@ function renderQueue(tracks) {
 
         const artist = document.createElement("div");
         artist.className = "queue-artist";
-        artist.textContent = track.artists.map((a) => a.name).join(", ");
+        artist.textContent = (track.artists || [])
+            .map((a) => a.name)
+            .join(", ");
 
         item.appendChild(title);
         item.appendChild(artist);
 
         item.addEventListener("click", () => {
             if (track.uri) {
+                // 點 queue → 播放該曲，並在 playTrack 裡自動 refresh queue
                 playTrack(track.uri);
             }
         });
@@ -368,16 +394,21 @@ queueRefreshBtn?.addEventListener("click", () => fetchQueue());
 playBtn.addEventListener("click", () => {
     if (!player) return;
     player.togglePlay();
+    // togglePlay 後，state 變化時也會在 player_state_changed 觸發 fetchQueue
 });
 
 prevBtn.addEventListener("click", () => {
     if (!player) return;
     player.previousTrack();
+    // 預防某些情況 state 事件延遲，手動再抓一次
+    fetchQueue();
 });
 
 nextBtn.addEventListener("click", () => {
     if (!player) return;
     player.nextTrack();
+    // 同上，主動 refresh
+    fetchQueue();
 });
 
 volumeBar.addEventListener("input", (e) => {
@@ -443,7 +474,11 @@ function startSimpleClock() {
         const mm = now.getMinutes().toString().padStart(2, "0");
 
         // 第一行時間
-        simpleClock.childNodes[0].nodeValue = `${hh}:${mm}`;
+        if (!simpleClock.firstChild) {
+            simpleClock.appendChild(document.createTextNode(`${hh}:${mm}`));
+        } else {
+            simpleClock.childNodes[0].nodeValue = `${hh}:${mm}`;
+        }
 
         const weekday = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
         const mon = (now.getMonth() + 1).toString().padStart(2, "0");
@@ -454,9 +489,6 @@ function startSimpleClock() {
     }
 
     // 初始化 & 每秒更新
-    if (!simpleClock.firstChild) {
-        simpleClock.appendChild(document.createTextNode("00:00"));
-    }
     updateClock();
     setInterval(updateClock, 1000);
 }
